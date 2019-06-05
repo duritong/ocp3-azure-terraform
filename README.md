@@ -19,8 +19,8 @@ This installs an OCP 3.11 enterprise on Microsoft Azure. It assumes everything i
 * cp ocp.tfvars.example ocp.tfvars
 * Edit tfvars according to your env
 * mkdir certs
-* ssh-keygen -t rsa -b 4096 -f certs/bastion -N '
-* ssh-keygen -t rsa -b 4096 -f certs/openshift -N '
+* ssh-keygen -t rsa -b 4096 -f certs/bastion -N ''
+* ssh-keygen -t rsa -b 4096 -f certs/openshift -N ''
 * cd terraform_init && ./apply.sh (OPTIONAL if you need to setup ResourceGroup etc.)
 * cd terraform && ./apply.sh
 * ssh -i certs/bastion ocpadmin@BASTION_IP

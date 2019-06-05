@@ -1,0 +1,101 @@
+# OCP 3.11
+
+
+[masters]
+${ocp_cluster_prefix}-master-[1:${ocp_master_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-master'
+[masters:vars]
+rhsub_ak=${rh_activation_key}
+rhsub_orgid=${rh_org}
+rhsub_pool=${rh_infra_pool_id}
+
+[etcd]
+${ocp_cluster_prefix}-master-[1:${ocp_master_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-master'
+
+[infra]
+${ocp_cluster_prefix}-infra-[1:${ocp_infra_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-infra'
+[infra:vars]
+rhsub_ak=${rh_activation_key}
+rhsub_orgid=${rh_org}
+rhsub_pool=${rh_infra_pool_id}
+
+[nodes]
+${ocp_cluster_prefix}-node-[1:${ocp_node_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-compute'
+[nodes:children]
+infra
+masters
+
+[OSEv3:children]
+masters
+etcd
+nodes
+infra
+
+[OSEv3:vars]
+openshift_release="3.11"
+openshift_deployment_type=openshift-enterprise
+
+openshift_install_examples=true
+
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+openshift_docker_options= "-l warn --ipv6=false --disable-legacy-registry --log-driver json-file --log-opt max-size=20M --log-opt max-file=3${openshift_docker_options}"
+osm_cluster_network_cidr='${osm_cluster_network_cidr}'
+openshift_portal_net='${openshift_portal_net}'
+# Configure number of bits to allocate to each host's subnet e.g. 9
+# would mean a /23 network on the host.
+osm_host_subnet_length=${osm_host_subnet_length}
+
+oreg_auth_user=${oreg_auth_user}
+oreg_auth_password=${oreg_auth_password}
+rhsub_ak=${rh_activation_key}
+rhsub_orgid=${rh_org}
+rhsub_pool=${rh_pool_id}
+
+openshift_master_api_port=443
+openshift_master_console_port=443
+
+osm_default_node_selector='node-role.kubernetes.io/compute=true'
+
+openshift_master_default_subdomain=apps.${ocp_dns_zone_name}
+
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+openshift_master_htpasswd_users={'${ocp_admin}': '${bcrypt(ocp_admin_password)}'}
+
+openshift_enable_service_catalog=false
+
+openshift_master_cluster_public_hostname=api.${ocp_dns_zone_name}
+openshift_master_cluster_hostname=api-int.${ocp_dns_zone_name}
+openshift_master_cluster_method=native
+
+
+ansible_user=ocpadmin
+ansible_become=yes
+
+openshift_cloudprovider_kind=azure
+openshift_cloudprovider_azure_client_id="{{ aadClientId }}"
+openshift_cloudprovider_azure_client_secret="{{ aadClientSecret }}"
+openshift_cloudprovider_azure_tenant_id="{{ tenantId }}"
+openshift_cloudprovider_azure_subscription_id="{{ subscriptionId }}"
+openshift_cloudprovider_azure_cloud=AzurePublicCloud
+openshift_cloudprovider_azure_vnet_name=${ocpvnet_name}
+openshift_cloudprovider_azure_security_group_name=ocp-node-security-group
+openshift_cloudprovider_azure_availability_set_name=ocp-node-availability-set
+openshift_cloudprovider_azure_resource_group=${resource_group_name}
+openshift_cloudprovider_azure_location=${location}
+
+openshift_storageclass_parameters={'kind': 'managed', 'storageaccounttype': 'Premium_LRS'}
+
+#openshift_hosted_router_certificate={"cafile": "/home/${ocp_admin}/routingca.pem", "certfile": "/home/${ocp_admin}/routingcert.pem", "keyfile": "/home/${ocp_admin}/routingkey.pem"}
+
+# Setup metrics
+openshift_metrics_install_metrics=true
+openshift_metrics_start_cluster=true
+
+# Setup logging
+openshift_logging_install_logging=true
+openshift_logging_es_memory_limit=8Gi
+
+os_firewall_use_firewalld=True
+openshift_enable_olm=true
+
+container_runtime_extra_storage='[{"device":"/dev/sdd","path":"/var/lib/origin/openshift.local.volumes","filesystem":"xfs","options":"gquota"}]'
+container_runtime_docker_storage_type=overlay2

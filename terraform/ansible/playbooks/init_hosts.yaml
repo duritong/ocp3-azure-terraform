@@ -1,0 +1,82 @@
+- name: 'Setup storage'
+  hosts: nodes
+  tasks:
+    - name: Create filesystem for /var/lib/docker
+      filesystem:
+        fstype: xfs
+        dev: '/dev/sdc'
+
+    - name: Create fstab entry for /var/lib/docker
+      mount:
+        name: '/var/lib/docker'
+        src: '/dev/sdc'
+        fstype: xfs
+        state: present
+
+    - name: Mount fstab entry for /var/lib/docker
+      mount:
+        name: '/var/lib/docker'
+        src: '/dev/sdc'
+        fstype: xfs
+        state: mounted
+      register: containers_mount
+
+    - name: "Fix selinux for /var/lib/docker"
+      shell: "restorecon -Rv /var/lib/docker"
+      when: containers_mount.changed
+
+    - name: Setup etcd
+      block:
+        - name: created /var/lib/etcd
+          file:
+            path: /var/lib/etcd
+            state: directory
+        - name: Create filesystem for /var/lib/etcd
+          filesystem:
+            fstype: xfs
+            dev: '/dev/sde'
+
+        - name: Create fstab entry for /var/lib/etcd
+          mount:
+            name: '/var/lib/etcd'
+            src: '/dev/sde'
+            fstype: xfs
+            state: present
+
+        - name: Mount fstab entry for /var/lib/etcd
+          mount:
+            name: '/var/lib/etcd'
+            src: '/dev/sde'
+            fstype: xfs
+            state: mounted
+          register: containers_mount
+
+        - name: "Fix selinux for /var/lib/etcd"
+          shell: "restorecon -Rv /var/lib/etcd"
+          when: containers_mount.changed
+      when: "(inventory_hostname in groups['masters']) or (inventory_hostname in groups['etcd'])"
+
+- import_playbook: '/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml'
+
+- name: 'Patch hosts'
+  hosts: nodes
+  tasks:
+    - name: 'clean cache'
+      file:
+        path: '/var/cache/yum'
+        state: absent
+    - name: 'Patch host'
+      yum:
+        name: '*'
+        state: latest
+    - name: 'reboot the server'
+      shell: 'sleep 2 && shutdown -r now'
+      async: 1
+      poll: 0
+    - name: 'Wait for server come back'
+      wait_for:
+        host: "{{ connect_address | default(inventory_hostname) }}"
+        port: "{{ (connect_port if connect_port is defined else ansible_port) | default(22) }}"
+        delay: 15
+        timeout: 600
+      delegate_to: 'localhost'

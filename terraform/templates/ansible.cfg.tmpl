@@ -1,0 +1,16 @@
+[defaults]
+remote_user=${ocp_vm_admin_name}
+inventory=/home/${ocp_vm_admin_name}/inventory
+
+library = /usr/share/ansible/openshift-ansible/roles/lib_utils/library/:/usr/share/ansible/openshift-ansible/library/
+roles_path    = /usr/share/ansible/openshift-ansible/roles:/home/${ocp_vm_admin_name}/ansible/roles
+host_key_checking = False
+stdout_callback = skippy
+forks = 20
+
+[paramiko_connection]
+pty=False
+
+[ssh_connection]
+control_path = %(directory)s/%%h-%%r
+pipelining = True
