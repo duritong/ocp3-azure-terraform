@@ -6,6 +6,13 @@ activationkey=$1
 org=$2
 poolid=$3
 
+AZUREDNS_SUBSCRIPTIONID=$4
+AZUREDNS_TENANTID=$5
+AZUREDNS_APPID=$6
+AZUREDNS_CLIENTSECRET=$7
+
+dns_zone_name=$8
+
 if [ -z $activationkey ] || [ -z $org ] || [ -z $poolid ]; then
   echo "Require 'activationkey org poolid' as parameters"
   exit 1
@@ -54,6 +61,8 @@ sudo subscription-manager repos \
     --enable="rhel-7-server-ansible-2.6-rpms" \
     --enable="rhel-7-fast-datapath-rpms" \
 
+set -e
+
 echo $(date) " - Update system to latest packages"
 sudo yum -y update
 echo $(date) " - System update complete"
@@ -74,5 +83,21 @@ echo $(date) " - Azure CLI installation complete"
 # Configure DNS so it always has the domain name
 echo $(date) " - Adding DOMAIN to search for resolv.conf"
 echo "DOMAIN=`domainname -d`" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+
+# configure acme.sh client
+git clone https://github.com/Neilpang/acme.sh.git
+cd acme.sh
+./acme.sh --install --home ~/acme --config-home ~/acme/data --cert-home  ~/certs --accountkey  ~/account.key
+
+source ~/.bashrc
+
+# register domains
+export AZUREDNS_SUBSCRIPTIONID
+export AZUREDNS_TENANTID
+export AZUREDNS_APPID
+export AZUREDNS_CLIENTSECRET
+
+acme.sh --issue --dns dns_azure -d api.${$dns_zone_name} -d api-int.${$dns_zone_name}
+acme.sh --issue --dns dns_azure -d apps.${$dns_zone_name} -d "*.apps.${dns_zone_name}"
 
 echo $(date) " - Script Complete"
