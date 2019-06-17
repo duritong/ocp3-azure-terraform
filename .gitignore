@@ -12,6 +12,8 @@ azure.auto.tfvars
 # Terraform plan
 *.plan
 
+*.log
+
 certs/*
 
 old/*
