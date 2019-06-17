@@ -14,7 +14,7 @@ data "template_file" "inventory" {
     ocp_dns_zone_name        = "${var.ocp_dns_zone_name}",
     ocpvnet_name             = "${var.ocpvnet_name}",
     resource_group_name      = "${data.azurerm_resource_group.ocp.name}",
-    location                 = "${var.location}",
+    location                 = "${data.azurerm_resource_group.ocp.location}",
     oreg_auth_user           = "${var.ocp_oreg_user}",
     oreg_auth_password       = "${var.ocp_oreg_password}",
     rh_activation_key        = "${var.rh_activation_key}",
