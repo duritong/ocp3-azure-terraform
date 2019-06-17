@@ -189,6 +189,17 @@ resource "azurerm_network_security_group" "master" {
     destination_address_prefix  = "*"
   }
   security_rule {
+    name                        = "node-exporter"
+    priority                    = 190
+    direction                   = "Inbound"
+    access                      = "Allow"
+    protocol                    = "Tcp"
+    source_port_range           = "*"
+    destination_port_range      = 9100
+    source_address_prefix       = "VirtualNetwork"
+    destination_address_prefix  = "*"
+  }
+  security_rule {
     name                       = "deny-by-default"
     description                = "Deny anything else"
     priority                   = 900
@@ -236,28 +247,6 @@ resource "azurerm_virtual_machine" "master" {
     managed_disk_type = "Standard_LRS"
   }
 
-  storage_data_disk {
-    name              = "${var.ocp_cluster_prefix}-master-${count.index + 1}-docker-disk"
-    create_option     = "Empty"
-    managed_disk_type = "Standard_LRS"
-    lun               = 0
-    disk_size_gb      = "${var.ocp_docker_disk_size}"
-  }
-  storage_data_disk {
-    name              = "${var.ocp_cluster_prefix}-master-${count.index + 1}-emptydir-disk"
-    create_option     = "Empty"
-    managed_disk_type = "Standard_LRS"
-    lun               = 1
-    disk_size_gb      = "${var.ocp_emptydir_disk_size}"
-  }
-  storage_data_disk {
-    name              = "${var.ocp_cluster_prefix}-master-${count.index + 1}-etcd-disk"
-    create_option     = "Empty"
-    managed_disk_type = "Standard_LRS"
-    lun               = 2
-    disk_size_gb      = "${var.ocp_etcd_disk_size}"
-  }
-
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
@@ -273,6 +262,57 @@ resource "azurerm_virtual_machine" "master" {
       key_data = "${file("${path.module}/../certs/openshift.pub")}"
     }
   }
+}
+
+resource "azurerm_managed_disk" "master_docker_disk" {
+  count                = "${var.ocp_master_count}"
+  name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-docker-disk"
+  location             = "${var.location}"
+  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = "${var.ocp_docker_disk_size}"
+}
+resource "azurerm_virtual_machine_data_disk_attachment" "master_docker_disk" {
+  count              = "${var.ocp_master_count}"
+  managed_disk_id    = "${element(azurerm_managed_disk.master_docker_disk.*.id, count.index)}"
+  virtual_machine_id = "${element(azurerm_virtual_machine.master.*.id, count.index)}"
+  lun                = 0
+  caching            = "ReadWrite"
+}
+
+resource "azurerm_managed_disk" "master_emptydir_disk" {
+  count                = "${var.ocp_master_count}"
+  name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-emptydir-disk"
+  location             = "${var.location}"
+  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = "${var.ocp_emptydir_disk_size}"
+}
+resource "azurerm_virtual_machine_data_disk_attachment" "master_emptydir_disk" {
+  count              = "${var.ocp_master_count}"
+  managed_disk_id    = "${element(azurerm_managed_disk.master_emptydir_disk.*.id, count.index)}"
+  virtual_machine_id = "${element(azurerm_virtual_machine.master.*.id, count.index)}"
+  lun                = 1
+  caching            = "ReadWrite"
+}
+
+resource "azurerm_managed_disk" "master_etcd_disk" {
+  count                = "${var.ocp_master_count}"
+  name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-etcd-disk"
+  location             = "${var.location}"
+  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = "${var.ocp_etcd_disk_size}"
+}
+resource "azurerm_virtual_machine_data_disk_attachment" "master_etcd_disk" {
+  count              = "${var.ocp_master_count}"
+  managed_disk_id    = "${element(azurerm_managed_disk.master_etcd_disk.*.id, count.index)}"
+  virtual_machine_id = "${element(azurerm_virtual_machine.master.*.id, count.index)}"
+  lun                = 2
+  caching            = "ReadWrite"
 }
 
 resource "azurerm_dns_a_record" "ocp-master" {

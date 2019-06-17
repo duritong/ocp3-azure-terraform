@@ -56,6 +56,17 @@ resource "azurerm_network_security_group" "node" {
     destination_address_prefix  = "*"
   }
   security_rule {
+    name                        = "node-exporter"
+    priority                    = 140
+    direction                   = "Inbound"
+    access                      = "Allow"
+    protocol                    = "Tcp"
+    source_port_range           = "*"
+    destination_port_range      = 9100
+    source_address_prefix       = "VirtualNetwork"
+    destination_address_prefix  = "*"
+  }
+  security_rule {
     name                       = "deny-by-default"
     description                = "Deny anything else"
     priority                   = 900
@@ -112,21 +123,6 @@ resource "azurerm_virtual_machine" "node" {
     managed_disk_type = "Standard_LRS"
   }
 
-  storage_data_disk {
-    name              = "${var.ocp_cluster_prefix}-node-${count.index + 1}-docker-disk"
-    create_option     = "Empty"
-    managed_disk_type = "Standard_LRS"
-    lun               = 0
-    disk_size_gb      = "${var.ocp_docker_disk_size}"
-  }
-  storage_data_disk {
-    name              = "${var.ocp_cluster_prefix}-node-${count.index + 1}-emptydir-disk"
-    create_option     = "Empty"
-    managed_disk_type = "Standard_LRS"
-    lun               = 1
-    disk_size_gb      = "${var.ocp_emptydir_disk_size}"
-  }
-
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
@@ -142,6 +138,40 @@ resource "azurerm_virtual_machine" "node" {
       key_data = "${file("${path.module}/../certs/openshift.pub")}"
     }
   }
+}
+
+resource "azurerm_managed_disk" "node_docker_disk" {
+  count                = "${var.ocp_node_count}"
+  name                 = "${var.ocp_cluster_prefix}-node-${count.index + 1}-docker-disk"
+  location             = "${var.location}"
+  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = "${var.ocp_docker_disk_size}"
+}
+resource "azurerm_virtual_machine_data_disk_attachment" "node_docker_disk" {
+  count              = "${var.ocp_node_count}"
+  managed_disk_id    = "${element(azurerm_managed_disk.node_docker_disk.*.id, count.index)}"
+  virtual_machine_id = "${element(azurerm_virtual_machine.node.*.id, count.index)}"
+  lun                = 0
+  caching            = "ReadWrite"
+}
+
+resource "azurerm_managed_disk" "node_emptydir_disk" {
+  count                = "${var.ocp_node_count}"
+  name                 = "${var.ocp_cluster_prefix}-node-${count.index + 1}-emptydir-disk"
+  location             = "${var.location}"
+  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = "${var.ocp_emptydir_disk_size}"
+}
+resource "azurerm_virtual_machine_data_disk_attachment" "node_emptydir_disk" {
+  count              = "${var.ocp_node_count}"
+  managed_disk_id    = "${element(azurerm_managed_disk.node_emptydir_disk.*.id, count.index)}"
+  virtual_machine_id = "${element(azurerm_virtual_machine.node.*.id, count.index)}"
+  lun                = 1
+  caching            = "ReadWrite"
 }
 
 resource "azurerm_dns_a_record" "ocp-node" {

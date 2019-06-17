@@ -129,7 +129,7 @@ resource "azurerm_virtual_machine" "bastion" {
     inline = [
       "chmod +x /home/${var.ocp_vm_admin_user}/bastion.sh",
       "chmod og-rwx /home/${var.ocp_vm_admin_user}/.ssh/id_rsa",
-      "/home/${var.ocp_vm_admin_user}/bastion.sh ${var.rh_activation_key} ${var.rh_org} ${var.rh_infra_pool_id}",
+      "/home/${var.ocp_vm_admin_user}/bastion.sh ${var.rh_activation_key} ${var.rh_org} ${var.rh_infra_pool_id} ${data.azurerm_client_config.current.subscription_id} ${data.azurerm_client_config.current.tenant_id} ${azuread_application.acme_app.application_id} '${azuread_service_principal_password.acme_app.value}' ${var.ocp_dns_zone_name}",
       "sudo shutdown -r +0",
     ]
 
