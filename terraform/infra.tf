@@ -38,6 +38,13 @@ resource "azurerm_lb_backend_address_pool" "infra" {
   loadbalancer_id     = "${azurerm_lb.infra.id}"
 }
 
+resource "azurerm_network_interface_backend_address_pool_association" "infra" {
+  count                   = "${var.ocp_infra_count}"
+  network_interface_id    = "${element(azurerm_network_interface.infra.*.id, count.index)}"
+  ip_configuration_name   = "default"
+  backend_address_pool_id = "${azurerm_lb_backend_address_pool.infra.id}"
+}
+
 resource "azurerm_lb_rule" "infra-80-80" {
   name                    = "infra-lb-rule-80-80"
   resource_group_name     = "${data.azurerm_resource_group.ocp.name}"
@@ -179,7 +186,6 @@ resource "azurerm_network_interface" "infra" {
     name                                    = "default"
     subnet_id                               = "${data.azurerm_subnet.master.id}"
     private_ip_address_allocation           = "dynamic"
-    load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.infra.id}"]
   }
 }
 

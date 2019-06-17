@@ -54,6 +54,13 @@ resource "azurerm_lb_backend_address_pool" "master" {
   loadbalancer_id     = "${azurerm_lb.master.id}"
 }
 
+resource "azurerm_network_interface_backend_address_pool_association" "master" {
+  count                   = "${var.ocp_master_count}"
+  network_interface_id    = "${element(azurerm_network_interface.master.*.id, count.index)}"
+  ip_configuration_name   = "default"
+  backend_address_pool_id = "${azurerm_lb_backend_address_pool.master.id}"
+}
+
 resource "azurerm_lb_rule" "master-443-443" {
   name                    = "master-lb-rule-443-443"
   resource_group_name     = "${data.azurerm_resource_group.ocp.name}"
@@ -206,7 +213,6 @@ resource "azurerm_network_interface" "master" {
     name                                    = "default"
     subnet_id                               = "${data.azurerm_subnet.master.id}"
     private_ip_address_allocation           = "dynamic"
-    load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.master.id}"]
   }
 }
 
