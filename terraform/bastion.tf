@@ -65,6 +65,8 @@ resource "azurerm_virtual_machine" "bastion" {
   network_interface_ids = ["${azurerm_network_interface.bastion.id}"]
   vm_size               = "${var.ocp_bastion_vm_size}"
 
+  depends_on = [azurerm_role_assignment.acme_app]
+
   storage_image_reference {
     id = "${var.ocp_os_image_ref}"
   }
