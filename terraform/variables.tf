@@ -41,6 +41,11 @@ variable "ocp_dns_zone_name" {
   description = "DNS Zone for nodes and OCP"
   type = "string"
 }
+variable "ocp_dns_base" {
+  description = "DNS base for OCP domains (api/apps)"
+  type = "string"
+  default = ""
+}
 
 variable "ocpvnet_name" {
   description = "Name of the ocpvnet"

@@ -6,7 +6,7 @@ resource "azurerm_public_ip" "infra" {
 }
 
 resource "azurerm_dns_a_record" "apps" {
-  name                = "*.apps"
+  name                = "*.apps${var.ocp_dns_base}"
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300
@@ -240,7 +240,7 @@ resource "azurerm_managed_disk" "infra_docker_disk" {
   count                = "${var.ocp_infra_count}"
   name                 = "${var.ocp_cluster_prefix}-infra-${count.index + 1}-docker-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_docker_disk_size}"
@@ -257,7 +257,7 @@ resource "azurerm_managed_disk" "infra_emptydir_disk" {
   count                = "${var.ocp_infra_count}"
   name                 = "${var.ocp_cluster_prefix}-infra-${count.index + 1}-emptydir-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_emptydir_disk_size}"

@@ -12,6 +12,7 @@ data "template_file" "inventory" {
     ocp_infra_count               = "${var.ocp_infra_count}",
     ocp_node_count                = "${var.ocp_node_count}",
     ocp_dns_zone_name             = "${var.ocp_dns_zone_name}",
+    ocp_dns_base                  = "${var.ocp_dns_base}",
     ocpvnet_name                  = "${var.ocpvnet_name}",
     resource_group_name           = "${data.azurerm_resource_group.ocp.name}",
     location                      = "${data.azurerm_resource_group.ocp.location}",

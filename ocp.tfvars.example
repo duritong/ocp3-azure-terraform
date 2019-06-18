@@ -14,3 +14,8 @@ rh_infra_pool_id="665544"
 ocp_oreg_user="1234|my-sa"
 ocp_oreg_password="somepwd"
 
+# dns zone, as managed by Azure
+ocp_dns_zone_name = 'ocp.example.com'
+# dns base name, for further subdomain in the zone for apps
+# must start with a .
+ocp_dns_base = '.c01'

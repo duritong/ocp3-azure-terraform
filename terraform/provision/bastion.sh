@@ -11,7 +11,7 @@ AZUREDNS_TENANTID=$5
 AZUREDNS_APPID=$6
 AZUREDNS_CLIENTSECRET=$7
 
-dns_zone_name=$8
+dns_base_name=$8
 
 if [ -z $activationkey ] || [ -z $org ] || [ -z $poolid ]; then
   echo "Require 'activationkey org poolid' as parameters"
@@ -97,7 +97,7 @@ export AZUREDNS_TENANTID
 export AZUREDNS_APPID
 export AZUREDNS_CLIENTSECRET
 
-~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "api.${dns_zone_name}" -d "api-int.${dns_zone_name}"
-~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "apps.${dns_zone_name}" -d "*.apps.${dns_zone_name}"
+~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "api${dns_base_name}" -d "api-int${dns_base_name}"
+~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "apps${dns_base_name}" -d "*.apps${dns_base_name}"
 
 echo $(date) " - Script Complete"

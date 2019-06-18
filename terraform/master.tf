@@ -14,14 +14,14 @@ resource "azurerm_public_ip" "master" {
 }
 
 resource "azurerm_dns_a_record" "api" {
-  name                = "api"
+  name                = "api${var.ocp_dns_base}"
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300
   records             = ["${azurerm_public_ip.master.ip_address}"]
 }
 resource "azurerm_dns_a_record" "api-int" {
-  name                = "api-int"
+  name                = "api-int${var.ocp_dns_base}"
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300
@@ -268,7 +268,7 @@ resource "azurerm_managed_disk" "master_docker_disk" {
   count                = "${var.ocp_master_count}"
   name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-docker-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_docker_disk_size}"
@@ -285,7 +285,7 @@ resource "azurerm_managed_disk" "master_emptydir_disk" {
   count                = "${var.ocp_master_count}"
   name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-emptydir-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_emptydir_disk_size}"
@@ -302,7 +302,7 @@ resource "azurerm_managed_disk" "master_etcd_disk" {
   count                = "${var.ocp_master_count}"
   name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-etcd-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_dns_zone.ocp.resource_group_name}"
+  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
   storage_account_type = "Standard_LRS"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_etcd_disk_size}"
