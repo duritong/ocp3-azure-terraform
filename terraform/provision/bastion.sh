@@ -89,7 +89,7 @@ git clone https://github.com/Neilpang/acme.sh.git
 cd acme.sh
 ./acme.sh --install --home ~/acme --config-home ~/acme/data --cert-home  ~/certs --accountkey  ~/account.key
 
-source ~/.bashrc
+. ~/acme/acme.sh.env
 
 # register domains
 export AZUREDNS_SUBSCRIPTIONID
@@ -97,7 +97,7 @@ export AZUREDNS_TENANTID
 export AZUREDNS_APPID
 export AZUREDNS_CLIENTSECRET
 
-acme.sh --issue --dns dns_azure -d api.${$dns_zone_name} -d api-int.${$dns_zone_name}
-acme.sh --issue --dns dns_azure -d apps.${$dns_zone_name} -d "*.apps.${dns_zone_name}"
+~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "api.${dns_zone_name}" -d "api-int.${dns_zone_name}"
+~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "apps.${dns_zone_name}" -d "*.apps.${dns_zone_name}"
 
 echo $(date) " - Script Complete"
