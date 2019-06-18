@@ -37,6 +37,29 @@ resource "azurerm_role_assignment" "azure_app" {
   principal_id         = "${azuread_service_principal.azure_app.id}"
 }
 
+resource "azurerm_role_definition" "dnstxt" {
+  name        = "DNS TXT Contributor"
+  scope       = "${data.azurerm_subscription.main.id}"
+  description = "Can manage DNS TXT records only."
+
+  permissions {
+    actions     = [
+      "Microsoft.Network/dnsZones/TXT/*",
+      "Microsoft.Network/dnsZones/read",
+      "Microsoft.Authorization/*/read",
+      "Microsoft.Insights/alertRules/*",
+      "Microsoft.ResourceHealth/availabilityStatuses/read",
+      "Microsoft.Resources/deployments/read",
+      "Microsoft.Resources/subscriptions/resourceGroups/read"
+    ]
+    not_actions = []
+  }
+
+  assignable_scopes = [
+    "${data.azurerm_subscription.main.id}",
+  ]
+}
+
 resource "random_id" "acme_app" {
   byte_length = 8
   prefix      = "acme-${data.azurerm_resource_group.ocp.name}-"
@@ -63,7 +86,7 @@ resource "azuread_service_principal_password" "acme_app" {
 }
 
 resource "azurerm_role_assignment" "acme_app" {
-  scope                = "${data.azurerm_dns_zone.ocp.id}"
-  role_definition_name = "DNS Zone Contributor"
-  principal_id         = "${azuread_service_principal.acme_app.id}"
+  scope              = "${data.azurerm_dns_zone.ocp.id}"
+  role_definition_id = "${azurerm_role_definition.dnstxt.id}"
+  principal_id       = "${azuread_service_principal.acme_app.id}"
 }
