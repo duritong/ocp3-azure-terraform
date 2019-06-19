@@ -120,7 +120,7 @@ resource "azurerm_virtual_machine" "node" {
     name              = "${var.ocp_cluster_prefix}-node-${count.index + 1}-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
+    managed_disk_type = "${var.ocp_disk_storage_plan}"
   }
 
   delete_os_disk_on_termination    = true
@@ -145,7 +145,7 @@ resource "azurerm_managed_disk" "node_docker_disk" {
   name                 = "${var.ocp_cluster_prefix}-node-${count.index + 1}-docker-disk"
   location             = "${var.location}"
   resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
-  storage_account_type = "Standard_LRS"
+  storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_docker_disk_size}"
 }
@@ -162,7 +162,7 @@ resource "azurerm_managed_disk" "node_emptydir_disk" {
   name                 = "${var.ocp_cluster_prefix}-node-${count.index + 1}-emptydir-disk"
   location             = "${var.location}"
   resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
-  storage_account_type = "Standard_LRS"
+  storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_emptydir_disk_size}"
 }

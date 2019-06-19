@@ -1,5 +1,5 @@
 data "azurerm_virtual_network" "ocpvnet" {
-  name                = "ocpvnet"
+  name                = "${var.ocpvnet_name}"
   resource_group_name = "${data.azurerm_resource_group.ocp.name}"
 }
 

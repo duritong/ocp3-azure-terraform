@@ -100,7 +100,7 @@ openshift_cloudprovider_azure_availability_set_name=ocp-node-availability-set
 openshift_cloudprovider_azure_resource_group=${resource_group_name}
 openshift_cloudprovider_azure_location=${location}
 
-openshift_storageclass_parameters={'kind': 'managed', 'storageaccounttype': 'Premium_LRS'}
+openshift_storageclass_parameters={'kind': 'managed', 'storageaccounttype': '${ocp_pv_storage_plan}'}
 
 openshift_master_named_certificates=[{"certfile": "/home/${ocp_admin}/certs/api${ocp_dns_base}.${ocp_dns_zone_name}/api${ocp_dns_base}.${ocp_dns_zone_name}.cer", "keyfile": "/home/${ocp_admin}/certs/api${ocp_dns_base}.${ocp_dns_zone_name}/api${ocp_dns_base}.${ocp_dns_zone_name}.key", "cafile": "/home/${ocp_admin}/certs/api${ocp_dns_base}.${ocp_dns_zone_name}/ca.cer"}]
 openshift_hosted_router_certificate={"cafile": "/home/${ocp_admin}/certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/ca.cer", "certfile": "/home/${ocp_admin}/certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/apps${ocp_dns_base}.${ocp_dns_zone_name}.cer", "keyfile": "/home/${ocp_admin}/certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/apps${ocp_dns_base}.${ocp_dns_zone_name}.key"}

@@ -3,7 +3,7 @@ output "bastion_public_ip" {
 }
 
 output "api_public_domain" {
-  value = "api.${data.azurerm_dns_zone.ocp.name}"
+  value = "api${var.ocp_dns_base}.${data.azurerm_dns_zone.ocp.name}"
 }
 
 output "node_count" {

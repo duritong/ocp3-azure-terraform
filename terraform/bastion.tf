@@ -6,7 +6,7 @@ resource "azurerm_public_ip" "bastion" {
 }
 
 resource "azurerm_dns_a_record" "bastion" {
-  name                = "bastion"
+  name                = "bastion${var.ocp_dns_base}"
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300
@@ -75,7 +75,7 @@ resource "azurerm_virtual_machine" "bastion" {
     name              = "${var.ocp_cluster_prefix}-bastion-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
+    managed_disk_type = "${var.ocp_disk_storage_plan}"
   }
 
   delete_os_disk_on_termination    = true
@@ -143,7 +143,7 @@ resource "azurerm_virtual_machine" "bastion" {
     }
   }
   provisioner "local-exec" {
-    command = "${path.module}/wait_port.sh ${azurerm_public_ip.bastion.ip_address} 22"
+    command = "sleep 10 && ${path.module}/wait_port.sh ${azurerm_public_ip.bastion.ip_address} 22"
     working_dir = "${path.module}"
   }
 }
@@ -153,5 +153,5 @@ resource "azurerm_dns_a_record" "ocp-bastion" {
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300
-  records             = ["${azurerm_public_ip.bastion.ip_address}"]
+  records             = ["${azurerm_network_interface.bastion.ip_address}"]
 }

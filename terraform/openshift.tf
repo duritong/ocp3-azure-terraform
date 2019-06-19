@@ -32,6 +32,7 @@ data "template_file" "inventory" {
     azure_client_secret           = "${azuread_service_principal_password.azure_app.value}"
     azure_tenant_id               = "${data.azurerm_client_config.current.tenant_id}"
     azure_subscription_id         = "${data.azurerm_client_config.current.subscription_id}"
+    ocp_pv_storage_plan           = "${var.ocp_pv_storage_plan}"
   }
 }
 

@@ -167,3 +167,14 @@ variable "ocp_openshift_portal_net" {
   default="10.84.0.0/16"
   type = string
 }
+
+variable "ocp_disk_storage_plan" {
+  description = "The plan to use for data disks"
+  default = "Standard_LRS"
+  type = string
+}
+variable "ocp_pv_storage_plan" {
+  description = "The plan to use for PVs"
+  default = "Standard_LRS"
+  type = string
+}

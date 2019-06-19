@@ -28,8 +28,7 @@ This installs an OCP 3.11 enterprise on Microsoft Azure. It assumes everything i
 
 ## TODO
 
-* Investigate Any RULE for 443 on master and LB
-* Investigate azure cli install failure
-* Let's Encrypt certificates
 * disable waa agent
-* post-install steps, such as making user admin etc.
+* post-install steps:
+** network policy
+** gquota in kubelete
