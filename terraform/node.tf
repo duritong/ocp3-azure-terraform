@@ -1,14 +1,14 @@
 resource "azurerm_availability_set" "node" {
   name                = "ocp-node-availability-set"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   managed             = true
 }
 
 resource "azurerm_network_security_group" "node" {
   name                = "ocp-node-security-group"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
 
   security_rule {
     name                       = "ssh"
@@ -84,12 +84,12 @@ resource "azurerm_network_interface" "node" {
   count                     = "${var.ocp_node_count}"
   name                      = "ocp-node-nic-${count.index + 1}"
   location                  = "${var.location}"
-  resource_group_name       = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name       = "${azurerm_resource_group.ocp.name}"
   network_security_group_id = "${azurerm_network_security_group.node.id}"
 
   ip_configuration {
     name                          = "default"
-    subnet_id                     = "${data.azurerm_subnet.node.id}"
+    subnet_id                     = "${azurerm_subnet.node.id}"
     private_ip_address_allocation = "dynamic"
   }
 }
@@ -97,7 +97,7 @@ resource "azurerm_network_interface" "node" {
 resource "azurerm_storage_container" "node" {
   count                 = "${var.ocp_node_count}"
   name                  = "node-${count.index + 1}"
-  resource_group_name   = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name   = "${azurerm_resource_group.ocp.name}"
   storage_account_name  = "${azurerm_storage_account.ocp.name}"
   container_access_type = "private"
 }
@@ -106,7 +106,7 @@ resource "azurerm_virtual_machine" "node" {
   count                 = "${var.ocp_node_count}"
   name                  = "${var.ocp_cluster_prefix}-node-${count.index + 1}${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
   location              = "${var.location}"
-  resource_group_name   = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name   = "${azurerm_resource_group.ocp.name}"
   network_interface_ids = ["${element(azurerm_network_interface.node.*.id, count.index)}"]
   vm_size               = "${var.ocp_node_vm_size}"
 
@@ -144,7 +144,7 @@ resource "azurerm_managed_disk" "node_docker_disk" {
   count                = "${var.ocp_node_count}"
   name                 = "${var.ocp_cluster_prefix}-node-${count.index + 1}-docker-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name  = "${azurerm_resource_group.ocp.name}"
   storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_docker_disk_size}"
@@ -161,7 +161,7 @@ resource "azurerm_managed_disk" "node_emptydir_disk" {
   count                = "${var.ocp_node_count}"
   name                 = "${var.ocp_cluster_prefix}-node-${count.index + 1}-emptydir-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name  = "${azurerm_resource_group.ocp.name}"
   storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_emptydir_disk_size}"

@@ -33,7 +33,7 @@ variable "ocp_vm_admin_user" {
 
 variable "ocp_cluster_prefix" {
   description = "Cluster Prefix name"
-  default = "ocp-dev01"
+  default = "ocp01"
   type = string
 }
 

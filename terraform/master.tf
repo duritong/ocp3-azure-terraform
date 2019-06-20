@@ -7,7 +7,7 @@ resource "random_string" "master" {
 resource "azurerm_public_ip" "master" {
   name                = "ocp-master-public-ip"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   allocation_method   = "Static"
   domain_name_label   = "ocp-${random_string.master.result}"
   sku                 = "Standard"
@@ -31,14 +31,14 @@ resource "azurerm_dns_a_record" "api-int" {
 resource "azurerm_availability_set" "master" {
   name                = "ocp-master-availability-set"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   managed             = true
 }
 
 resource "azurerm_lb" "master" {
   name                = "ocp-master-load-balancer"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   sku                 = "Standard"
 
   frontend_ip_configuration {
@@ -50,7 +50,7 @@ resource "azurerm_lb" "master" {
 
 resource "azurerm_lb_backend_address_pool" "master" {
   name                = "ocp-master-address-pool"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   loadbalancer_id     = "${azurerm_lb.master.id}"
 }
 
@@ -63,7 +63,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "master" {
 
 resource "azurerm_lb_rule" "master-443-443" {
   name                    = "master-lb-rule-443-443"
-  resource_group_name     = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name     = "${azurerm_resource_group.ocp.name}"
   loadbalancer_id         = "${azurerm_lb.master.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.master.id}"
   probe_id                = "${azurerm_lb_probe.master.id}"
@@ -76,7 +76,7 @@ resource "azurerm_lb_rule" "master-443-443" {
 
 resource "azurerm_lb_probe" "master" {
   name                = "master-lb-probe-443-up"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   loadbalancer_id     = "${azurerm_lb.master.id}"
   protocol            = "Https"
   request_path        = "/healthz"
@@ -86,7 +86,7 @@ resource "azurerm_lb_probe" "master" {
 resource "azurerm_network_security_group" "master" {
   name                = "ocp-master-security-group"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
 
   security_rule {
     name                       = "ssh"
@@ -217,12 +217,12 @@ resource "azurerm_network_interface" "master" {
   count                     = "${var.ocp_master_count}"
   name                      = "ocp-master-nic-${count.index + 1}"
   location                  = "${var.location}"
-  resource_group_name       = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name       = "${azurerm_resource_group.ocp.name}"
   network_security_group_id = "${azurerm_network_security_group.master.id}"
 
   ip_configuration {
     name                                    = "default"
-    subnet_id                               = "${data.azurerm_subnet.master.id}"
+    subnet_id                               = "${azurerm_subnet.master.id}"
     private_ip_address_allocation           = "dynamic"
   }
 }
@@ -231,7 +231,7 @@ resource "azurerm_virtual_machine" "master" {
   count                 = "${var.ocp_master_count}"
   name                  = "${var.ocp_cluster_prefix}-master-${count.index + 1}${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
   location              = "${var.location}"
-  resource_group_name   = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name   = "${azurerm_resource_group.ocp.name}"
   network_interface_ids = ["${element(azurerm_network_interface.master.*.id, count.index)}"]
   vm_size               = "${var.ocp_master_vm_size}"
   availability_set_id   = "${azurerm_availability_set.master.id}"
@@ -268,7 +268,7 @@ resource "azurerm_managed_disk" "master_docker_disk" {
   count                = "${var.ocp_master_count}"
   name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-docker-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name  = "${azurerm_resource_group.ocp.name}"
   storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_docker_disk_size}"
@@ -285,7 +285,7 @@ resource "azurerm_managed_disk" "master_emptydir_disk" {
   count                = "${var.ocp_master_count}"
   name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-emptydir-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name  = "${azurerm_resource_group.ocp.name}"
   storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_emptydir_disk_size}"
@@ -302,7 +302,7 @@ resource "azurerm_managed_disk" "master_etcd_disk" {
   count                = "${var.ocp_master_count}"
   name                 = "${var.ocp_cluster_prefix}-master-${count.index + 1}-etcd-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name  = "${azurerm_resource_group.ocp.name}"
   storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_etcd_disk_size}"

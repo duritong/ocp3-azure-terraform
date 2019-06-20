@@ -2,13 +2,14 @@ provider "azurerm" {}
 data "azurerm_subscription" "main" {}
 data "azurerm_client_config" "current" {}
 
-data "azurerm_resource_group" "ocp" {
+resource "azurerm_resource_group" "ocp" {
   name     = "${var.resource_group_name}"
+  location = "${var.location}"
 }
 
 resource "random_id" "azure_app" {
   byte_length = 8
-  prefix      = "ocp-${data.azurerm_resource_group.ocp.name}-"
+  prefix      = "ocp-${azurerm_resource_group.ocp.name}-"
 }
 
 resource "azuread_application" "azure_app" {
@@ -32,7 +33,7 @@ resource "azuread_service_principal_password" "azure_app" {
 }
 
 resource "azurerm_role_assignment" "azure_app" {
-  scope                = "${data.azurerm_subscription.main.id}/resourceGroups/${data.azurerm_resource_group.ocp.name}"
+  scope                = "${data.azurerm_subscription.main.id}/resourceGroups/${azurerm_resource_group.ocp.name}"
   role_definition_name = "Contributor"
   principal_id         = "${azuread_service_principal.azure_app.id}"
 }
@@ -62,7 +63,7 @@ resource "azurerm_role_definition" "dnstxt" {
 
 resource "random_id" "acme_app" {
   byte_length = 8
-  prefix      = "acme-${data.azurerm_resource_group.ocp.name}-"
+  prefix      = "acme-${azurerm_resource_group.ocp.name}-"
 }
 
 resource "azuread_application" "acme_app" {

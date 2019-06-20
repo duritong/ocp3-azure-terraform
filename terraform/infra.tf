@@ -1,7 +1,7 @@
 resource "azurerm_public_ip" "infra" {
   name                = "ocp-infra-public-ip"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   allocation_method   = "Static"
 }
 
@@ -16,14 +16,14 @@ resource "azurerm_dns_a_record" "apps" {
 resource "azurerm_availability_set" "infra" {
   name                = "ocp-infra-availability-set"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   managed             = true
 }
 
 resource "azurerm_lb" "infra" {
   name                = "ocp-infra-load-balancer"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
 
   frontend_ip_configuration {
     name                          = "default"
@@ -34,7 +34,7 @@ resource "azurerm_lb" "infra" {
 
 resource "azurerm_lb_backend_address_pool" "infra" {
   name                = "ocp-infra-address-pool"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   loadbalancer_id     = "${azurerm_lb.infra.id}"
 }
 
@@ -47,7 +47,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "infra" {
 
 resource "azurerm_lb_rule" "infra-80-80" {
   name                    = "infra-lb-rule-80-80"
-  resource_group_name     = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name     = "${azurerm_resource_group.ocp.name}"
   loadbalancer_id         = "${azurerm_lb.infra.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.infra.id}"
   protocol                       = "tcp"
@@ -58,7 +58,7 @@ resource "azurerm_lb_rule" "infra-80-80" {
 
 resource "azurerm_lb_rule" "infra-443-443" {
   name                    = "infra-lb-rule-443-443"
-  resource_group_name     = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name     = "${azurerm_resource_group.ocp.name}"
   loadbalancer_id         = "${azurerm_lb.infra.id}"
   backend_address_pool_id = "${azurerm_lb_backend_address_pool.infra.id}"
   protocol                       = "tcp"
@@ -70,7 +70,7 @@ resource "azurerm_lb_rule" "infra-443-443" {
 resource "azurerm_network_security_group" "infra" {
   name                = "ocp-infra-security-group"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
 
   security_rule {
     name                       = "ssh"
@@ -190,12 +190,12 @@ resource "azurerm_network_interface" "infra" {
   count                     = "${var.ocp_infra_count}"
   name                      = "ocp-infra-nic-${count.index + 1}"
   location                  = "${var.location}"
-  resource_group_name       = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name       = "${azurerm_resource_group.ocp.name}"
   network_security_group_id = "${azurerm_network_security_group.infra.id}"
 
   ip_configuration {
     name                                    = "default"
-    subnet_id                               = "${data.azurerm_subnet.master.id}"
+    subnet_id                               = "${azurerm_subnet.master.id}"
     private_ip_address_allocation           = "dynamic"
   }
 }
@@ -204,7 +204,7 @@ resource "azurerm_virtual_machine" "infra" {
   count                 = "${var.ocp_infra_count}"
   name                  = "${var.ocp_cluster_prefix}-infra-${count.index + 1}${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
   location              = "${var.location}"
-  resource_group_name   = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name   = "${azurerm_resource_group.ocp.name}"
   network_interface_ids = ["${element(azurerm_network_interface.infra.*.id, count.index)}"]
   vm_size               = "${var.ocp_infra_vm_size}"
   availability_set_id   = "${azurerm_availability_set.infra.id}"
@@ -240,7 +240,7 @@ resource "azurerm_managed_disk" "infra_docker_disk" {
   count                = "${var.ocp_infra_count}"
   name                 = "${var.ocp_cluster_prefix}-infra-${count.index + 1}-docker-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name  = "${azurerm_resource_group.ocp.name}"
   storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_docker_disk_size}"
@@ -257,7 +257,7 @@ resource "azurerm_managed_disk" "infra_emptydir_disk" {
   count                = "${var.ocp_infra_count}"
   name                 = "${var.ocp_cluster_prefix}-infra-${count.index + 1}-emptydir-disk"
   location             = "${var.location}"
-  resource_group_name  = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name  = "${azurerm_resource_group.ocp.name}"
   storage_account_type = "${var.ocp_disk_storage_plan}"
   create_option        = "Empty"
   disk_size_gb         = "${var.ocp_emptydir_disk_size}"

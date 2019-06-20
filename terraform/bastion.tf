@@ -1,7 +1,7 @@
 resource "azurerm_public_ip" "bastion" {
   name                = "ocp-bastion-public-ip"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
   allocation_method   = "Static"
 }
 
@@ -16,13 +16,13 @@ resource "azurerm_dns_a_record" "bastion" {
 resource "azurerm_network_interface" "bastion" {
   name                      = "ocp-bastion-nic"
   location                  = "${var.location}"
-  resource_group_name       = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name       = "${azurerm_resource_group.ocp.name}"
   network_security_group_id = "${azurerm_network_security_group.bastion.id}"
 
   ip_configuration {
     name                          = "default"
     public_ip_address_id          = "${azurerm_public_ip.bastion.id}"
-    subnet_id                     = "${data.azurerm_subnet.master.id}"
+    subnet_id                     = "${azurerm_subnet.master.id}"
     private_ip_address_allocation = "dynamic"
   }
 }
@@ -30,7 +30,7 @@ resource "azurerm_network_interface" "bastion" {
 resource "azurerm_network_security_group" "bastion" {
   name                = "ocp-bastion-security-group"
   location            = "${var.location}"
-  resource_group_name = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name = "${azurerm_resource_group.ocp.name}"
 
   security_rule {
     name                       = "ssh"
@@ -61,7 +61,7 @@ resource "azurerm_network_security_group" "bastion" {
 resource "azurerm_virtual_machine" "bastion" {
   name                  = "${var.ocp_cluster_prefix}-bastion${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
   location              = "${var.location}"
-  resource_group_name   = "${data.azurerm_resource_group.ocp.name}"
+  resource_group_name   = "${azurerm_resource_group.ocp.name}"
   network_interface_ids = ["${azurerm_network_interface.bastion.id}"]
   vm_size               = "${var.ocp_bastion_vm_size}"
 
