@@ -176,7 +176,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "node_emptydir_disk" {
 
 resource "azurerm_dns_a_record" "ocp-node" {
   count               = "${var.ocp_node_count}"
-  name                = "${var.ocp_cluster_prefix}-node-${count.index + 1}"
+  name                = "${var.ocp_cluster_prefix}-node-${count.index + 1}${var.ocp_node_dns_suffix}"
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300

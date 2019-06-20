@@ -149,7 +149,7 @@ resource "azurerm_virtual_machine" "bastion" {
 }
 
 resource "azurerm_dns_a_record" "ocp-bastion" {
-  name                = "${var.ocp_cluster_prefix}-bastion"
+  name                = "${var.ocp_cluster_prefix}-bastion${var.ocp_node_dns_suffix}"
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300

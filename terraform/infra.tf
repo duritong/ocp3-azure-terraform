@@ -272,7 +272,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "infra_emptydir_disk" {
 
 resource "azurerm_dns_a_record" "ocp-infra" {
   count               = "${var.ocp_infra_count}"
-  name                = "${var.ocp_cluster_prefix}-infra-${count.index + 1}"
+  name                = "${var.ocp_cluster_prefix}-infra-${count.index + 1}${var.ocp_node_dns_suffix}"
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300
