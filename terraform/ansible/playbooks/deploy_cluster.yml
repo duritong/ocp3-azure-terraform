@@ -2,7 +2,6 @@
 
 - name: 'Add Admin rights'
   hosts: masters[0]
-  tasks:
   gather_facts: no
   tasks:
     - name: make OpenShift user cluster admin
@@ -17,26 +16,23 @@
 
 - name: 'Configure Network policy'
   hosts: masters[0]
-  tasks:
   gather_facts: no
   tasks:
-      name: Copy policies
+    - name: Copy policies
       copy:
-        src: {{ inventory_dir }}/policies
-        dest: /home/{{ ocp_admin }}/
+        src: "{{ inventory_dir }}/policies"
+        dest: "/home/{{ ocp_admin }}/"
     - name: Get List of OpenShift Projects
-      command: >
-        oc get namespaces -o name
+      command: oc get namespaces --output=name
       register: openshift_namespaces
     - name: Apply Default Policies
-      command: |
+      shell: |
         for pol in ~/policies/baseline/*.yml; do
           oc apply -f $pol -n {{ item | basename }}
         done
-        if [ -d ~/policies/$pol ]; then
-          for pol in ~/policies/$pol/*.yml; do
+        if [ -d ~/policies/{{ item | basename }} ]; then
+          for pol in ~/policies/{{ item | basename}}/*.yml; do
             oc apply -f $pol -n {{ item | basename }}
           done
         fi
       with_items: "{{ openshift_namespaces.stdout_lines }}"
-
