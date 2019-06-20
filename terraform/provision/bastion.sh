@@ -87,7 +87,7 @@ echo "DOMAIN=`domainname -d`" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg
 # configure acme.sh client
 git clone https://github.com/Neilpang/acme.sh.git
 cd acme.sh
-./acme.sh --install --home ~/acme --config-home ~/acme/data --cert-home  ~/certs --accountkey  ~/account.key
+./acme.sh --install --home ~/acme --config-home ~/ocp/acme/data --cert-home  ~/ocp/certs --accountkey  ~/ocp/acme/account.key
 
 . ~/acme/acme.sh.env
 
@@ -97,7 +97,14 @@ export AZUREDNS_TENANTID
 export AZUREDNS_APPID
 export AZUREDNS_CLIENTSECRET
 
-~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "api${dns_base_name}" -d "api-int${dns_base_name}"
-~/acme/acme.sh --config-home /home/ocpadmin/acme/data --issue --dns dns_azure -d "apps${dns_base_name}" -d "*.apps${dns_base_name}"
+~/acme/acme.sh --config-home /home/ocpadmin/ocp/acme/data --issue --dns dns_azure -d "api${dns_base_name}" -d "api-int${dns_base_name}"
+~/acme/acme.sh --config-home /home/ocpadmin/ocp/acme/data --issue --dns dns_azure -d "apps${dns_base_name}" -d "*.apps${dns_base_name}"
+
+cd /home/ocpadmin/ocp
+git init
+git config user.name "Bastion api${dns_base_name}"
+git config user.email "bastion@api${dns_base_name}"
+git add .
+git commit -a -m "initial commit of cluster @ api${dns_base_name}"
 
 echo $(date) " - Script Complete"

@@ -50,7 +50,7 @@ resource "null_resource" "inventory" {
   }
   provisioner "file" {
     content = "${data.template_file.inventory.rendered}"
-    destination = "/home/${var.ocp_vm_admin_user}/inventory"
+    destination = "/home/${var.ocp_vm_admin_user}/ocp/inventory"
     connection {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
@@ -66,7 +66,7 @@ resource "null_resource" "ansiblecfg" {
   }
   provisioner "file" {
     content = "${data.template_file.ansiblecfg.rendered}"
-    destination = "/home/${var.ocp_vm_admin_user}/.ansible.cfg"
+    destination = "/home/${var.ocp_vm_admin_user}/ocp/ansible.cfg"
     connection {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
@@ -77,13 +77,26 @@ resource "null_resource" "ansiblecfg" {
 }
 
 resource "null_resource" "openshift-prepare" {
-  depends_on = [null_resource.inventory, null_resource.ansiblecfg, azurerm_virtual_machine.master, azurerm_virtual_machine.infra, azurerm_virtual_machine.node]
+  depends_on = [
+    null_resource.inventory,
+    null_resource.ansiblecfg,
+    azurerm_virtual_machine.master,
+    azurerm_virtual_machine.infra,
+    azurerm_virtual_machine.node,
+    azurerm_virtual_machine_data_disk_attachment.master_docker_disk,
+    azurerm_virtual_machine_data_disk_attachment.master_emptydir_disk,
+    azurerm_virtual_machine_data_disk_attachment.master_etcd_disk,
+    azurerm_virtual_machine_data_disk_attachment.infra_docker_disk,
+    azurerm_virtual_machine_data_disk_attachment.infra_emptydir_disk,
+    azurerm_virtual_machine_data_disk_attachment.node_docker_disk,
+    azurerm_virtual_machine_data_disk_attachment.node_emptydir_disk
+  ]
 
   provisioner "remote-exec" {
     inline = [
       # runs all prereqs + patches
-      "ansible-playbook /home/${var.ocp_vm_admin_user}/ansible/playbooks/init_hosts.yaml",
-#      "ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml",
+      "cd /home/${var.ocp_vm_admin_user}/ocp && ansible-playbook playbooks/init_hosts.yaml",
+#      "cd /home/${var.ocp_vm_admin_user}/ocp && ansible-playbook playbooks/deploy_cluster.yml",
     ]
 
     connection {

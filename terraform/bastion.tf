@@ -107,7 +107,7 @@ resource "azurerm_virtual_machine" "bastion" {
   }
   provisioner "file" {
     source = "${path.module}/ansible"
-    destination = "/home/${var.ocp_vm_admin_user}/ansible/"
+    destination = "/home/${var.ocp_vm_admin_user}/ocp"
 
     connection {
       type        = "ssh"
@@ -153,5 +153,5 @@ resource "azurerm_dns_a_record" "ocp-bastion" {
   zone_name           = "${data.azurerm_dns_zone.ocp.name}"
   resource_group_name = "${data.azurerm_dns_zone.ocp.resource_group_name}"
   ttl                 = 300
-  records             = ["${azurerm_network_interface.bastion.ip_address}"]
+  records             = ["${azurerm_network_interface.bastion.private_ip_address}"]
 }

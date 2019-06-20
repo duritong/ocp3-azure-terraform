@@ -102,8 +102,8 @@ openshift_cloudprovider_azure_location=${location}
 
 openshift_storageclass_parameters={'kind': 'managed', 'storageaccounttype': '${ocp_pv_storage_plan}'}
 
-openshift_master_named_certificates=[{"certfile": "/home/${ocp_admin}/certs/api${ocp_dns_base}.${ocp_dns_zone_name}/api${ocp_dns_base}.${ocp_dns_zone_name}.cer", "keyfile": "/home/${ocp_admin}/certs/api${ocp_dns_base}.${ocp_dns_zone_name}/api${ocp_dns_base}.${ocp_dns_zone_name}.key", "cafile": "/home/${ocp_admin}/certs/api${ocp_dns_base}.${ocp_dns_zone_name}/ca.cer"}]
-openshift_hosted_router_certificate={"cafile": "/home/${ocp_admin}/certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/ca.cer", "certfile": "/home/${ocp_admin}/certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/apps${ocp_dns_base}.${ocp_dns_zone_name}.cer", "keyfile": "/home/${ocp_admin}/certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/apps${ocp_dns_base}.${ocp_dns_zone_name}.key"}
+openshift_master_named_certificates=[{"certfile": "certs/api${ocp_dns_base}.${ocp_dns_zone_name}/api${ocp_dns_base}.${ocp_dns_zone_name}.cer", "keyfile": "certs/api${ocp_dns_base}.${ocp_dns_zone_name}/api${ocp_dns_base}.${ocp_dns_zone_name}.key", "cafile": "certs/api${ocp_dns_base}.${ocp_dns_zone_name}/ca.cer"}]
+openshift_hosted_router_certificate={"cafile": "certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/ca.cer", "certfile": "certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/apps${ocp_dns_base}.${ocp_dns_zone_name}.cer", "keyfile": "certs/apps${ocp_dns_base}.${ocp_dns_zone_name}/apps${ocp_dns_base}.${ocp_dns_zone_name}.key"}
 
 # Setup metrics
 openshift_metrics_server_install=true
