@@ -1,7 +1,7 @@
 # OCP 3.11
 
 [masters]
-${ocp_cluster_prefix}-master-[1:${ocp_master_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-master'
+${ocp_cluster_prefix}-master-[1:${ocp_master_count}]${ocp_node_dns_suffix}.${ocp_dns_zone_name} openshift_node_group_name='node-config-master'
 [masters:vars]
 rhsub_ak=${rh_activation_key}
 rhsub_orgid=${rh_org}
@@ -13,17 +13,17 @@ registry_storage_account_name=${registry_storage_account_name}
 registry_storage_account_key=${registry_storage_account_key}
 
 [etcd]
-${ocp_cluster_prefix}-master-[1:${ocp_master_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-master'
+${ocp_cluster_prefix}-master-[1:${ocp_master_count}]${ocp_node_dns_suffix}.${ocp_dns_zone_name} openshift_node_group_name='node-config-master'
 
 [infra]
-${ocp_cluster_prefix}-infra-[1:${ocp_infra_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-infra'
+${ocp_cluster_prefix}-infra-[1:${ocp_infra_count}]${ocp_node_dns_suffix}.${ocp_dns_zone_name} openshift_node_group_name='node-config-infra'
 [infra:vars]
 rhsub_ak=${rh_activation_key}
 rhsub_orgid=${rh_org}
 rhsub_pool=${rh_infra_pool_id}
 
 [nodes]
-${ocp_cluster_prefix}-node-[1:${ocp_node_count}].${ocp_dns_zone_name} openshift_node_group_name='node-config-compute'
+${ocp_cluster_prefix}-node-[1:${ocp_node_count}]${ocp_node_dns_suffix}.${ocp_dns_zone_name} openshift_node_group_name='node-config-compute'
 [nodes:children]
 infra
 masters
