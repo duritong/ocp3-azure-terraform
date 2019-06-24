@@ -68,7 +68,7 @@ sudo yum -y update
 echo $(date) " - System update complete"
 
 echo $(date) " - Install base packages"
-sudo yum -y install wget git net-tools bind-utils iptables-services bridge-utils bash-completion httpd-tools kexec-tools sos psacct ansible openshift-ansible atomic-openshift-clients
+sudo yum -y install wget git net-tools bind-utils iptables-services bridge-utils bash-completion httpd-tools kexec-tools sos psacct ansible openshift-ansible atomic-openshift-clients tmux
 echo $(date) " - Base package installation complete"
 
 # Installing Azure CLI
