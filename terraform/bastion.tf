@@ -82,7 +82,7 @@ resource "azurerm_virtual_machine" "bastion" {
   delete_data_disks_on_termination = true
 
   os_profile {
-    computer_name  = "${var.ocp_cluster_prefix}-bastion.${var.ocp_dns_zone_name}"
+    computer_name  = "${var.ocp_cluster_prefix}-bastion${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
     admin_username = "${var.ocp_vm_admin_user}"
   }
 

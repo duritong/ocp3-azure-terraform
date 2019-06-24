@@ -127,7 +127,7 @@ resource "azurerm_virtual_machine" "node" {
   delete_data_disks_on_termination = true
 
   os_profile {
-    computer_name  = "${var.ocp_cluster_prefix}-node-${count.index + 1}.${data.azurerm_dns_zone.ocp.name}"
+    computer_name  = "${var.ocp_cluster_prefix}-node-${count.index + 1}${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
     admin_username = "${var.ocp_vm_admin_user}"
   }
 
