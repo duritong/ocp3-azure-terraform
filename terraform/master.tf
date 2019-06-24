@@ -229,7 +229,7 @@ resource "azurerm_network_interface" "master" {
 
 resource "azurerm_virtual_machine" "master" {
   count                 = "${var.ocp_master_count}"
-  name                  = "${var.ocp_cluster_prefix}-master-${count.index + 1}.${var.ocp_dns_zone_name}"
+  name                  = "${var.ocp_cluster_prefix}-master-${count.index + 1}${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
   location              = "${var.location}"
   resource_group_name   = "${data.azurerm_resource_group.ocp.name}"
   network_interface_ids = ["${element(azurerm_network_interface.master.*.id, count.index)}"]

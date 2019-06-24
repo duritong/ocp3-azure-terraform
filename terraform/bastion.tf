@@ -59,7 +59,7 @@ resource "azurerm_network_security_group" "bastion" {
 }
 
 resource "azurerm_virtual_machine" "bastion" {
-  name                  = "${var.ocp_cluster_prefix}-bastion.${var.ocp_dns_zone_name}"
+  name                  = "${var.ocp_cluster_prefix}-bastion${var.ocp_node_dns_suffix}.${var.ocp_dns_zone_name}"
   location              = "${var.location}"
   resource_group_name   = "${data.azurerm_resource_group.ocp.name}"
   network_interface_ids = ["${azurerm_network_interface.bastion.id}"]
