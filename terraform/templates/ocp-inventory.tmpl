@@ -117,5 +117,6 @@ openshift_logging_es_pvc_dynamic=true
 os_firewall_use_firewalld=True
 openshift_enable_olm=true
 
+openshift_node_local_quota_per_fsgroup=10Gi
 container_runtime_extra_storage='[{"device":"/dev/sdd","path":"/var/lib/origin/openshift.local.volumes","filesystem":"xfs","options":"gquota"}]'
 container_runtime_docker_storage_type=overlay2
