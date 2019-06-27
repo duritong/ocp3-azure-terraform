@@ -39,7 +39,7 @@ resource "azurerm_role_assignment" "azure_app" {
 }
 
 resource "azurerm_role_definition" "dnstxt" {
-  name        = "DNS TXT Contributor"
+  name        = "DNS TXT Contributor for ${var.ocp_cluster_prefix}"
   scope       = "${data.azurerm_subscription.main.id}"
   description = "Can manage DNS TXT records only."
 
