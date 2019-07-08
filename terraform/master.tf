@@ -5,11 +5,11 @@ resource "random_string" "master" {
 }
 
 resource "azurerm_public_ip" "master" {
-  name                = "ocp-master-public-ip"
+  name                = "${var.ocp_cluster_prefix}-master-public-ip"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.ocp.name}"
   allocation_method   = "Static"
-  domain_name_label   = "ocp-${random_string.master.result}"
+  domain_name_label   = "${var.ocp_cluster_prefix}-${random_string.master.result}"
   sku                 = "Standard"
 }
 
@@ -29,14 +29,14 @@ resource "azurerm_dns_a_record" "api-int" {
 }
 
 resource "azurerm_availability_set" "master" {
-  name                = "ocp-master-availability-set"
+  name                = "${var.ocp_cluster_prefix}-master-availability-set"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.ocp.name}"
   managed             = true
 }
 
 resource "azurerm_lb" "master" {
-  name                = "ocp-master-load-balancer"
+  name                = "${var.ocp_cluster_prefix}-master-load-balancer"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.ocp.name}"
   sku                 = "Standard"
@@ -49,7 +49,7 @@ resource "azurerm_lb" "master" {
 }
 
 resource "azurerm_lb_backend_address_pool" "master" {
-  name                = "ocp-master-address-pool"
+  name                = "${var.ocp_cluster_prefix}-master-address-pool"
   resource_group_name = "${azurerm_resource_group.ocp.name}"
   loadbalancer_id     = "${azurerm_lb.master.id}"
 }
@@ -84,7 +84,7 @@ resource "azurerm_lb_probe" "master" {
 }
 
 resource "azurerm_network_security_group" "master" {
-  name                = "ocp-master-security-group"
+  name                = "${var.ocp_cluster_prefix}-master-security-group"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.ocp.name}"
 
@@ -215,7 +215,7 @@ resource "azurerm_network_security_group" "master" {
 
 resource "azurerm_network_interface" "master" {
   count                     = "${var.ocp_master_count}"
-  name                      = "ocp-master-nic-${count.index + 1}"
+  name                      = "${var.ocp_cluster_prefix}-master-nic-${count.index + 1}"
   location                  = "${var.location}"
   resource_group_name       = "${azurerm_resource_group.ocp.name}"
   network_security_group_id = "${azurerm_network_security_group.master.id}"
@@ -241,7 +241,7 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_os_disk {
-    name              = "ocp-master-${count.index + 1}-os-disk"
+    name              = "${var.ocp_cluster_prefix}-master-${count.index + 1}-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "${var.ocp_disk_storage_plan}"

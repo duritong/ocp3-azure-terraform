@@ -1,12 +1,12 @@
 resource "azurerm_availability_set" "node" {
-  name                = "ocp-node-availability-set"
+  name                = "${var.ocp_cluster_prefix}-node-availability-set"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.ocp.name}"
   managed             = true
 }
 
 resource "azurerm_network_security_group" "node" {
-  name                = "ocp-node-security-group"
+  name                = "${var.ocp_cluster_prefix}-node-security-group"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.ocp.name}"
 
@@ -82,7 +82,7 @@ resource "azurerm_network_security_group" "node" {
 
 resource "azurerm_network_interface" "node" {
   count                     = "${var.ocp_node_count}"
-  name                      = "ocp-node-nic-${count.index + 1}"
+  name                      = "${var.ocp_cluster_prefix}-node-nic-${count.index + 1}"
   location                  = "${var.location}"
   resource_group_name       = "${azurerm_resource_group.ocp.name}"
   network_security_group_id = "${azurerm_network_security_group.node.id}"

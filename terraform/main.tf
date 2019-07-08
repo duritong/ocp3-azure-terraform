@@ -9,7 +9,7 @@ resource "azurerm_resource_group" "ocp" {
 
 resource "random_id" "azure_app" {
   byte_length = 8
-  prefix      = "ocp-${azurerm_resource_group.ocp.name}-"
+  prefix      = "${var.ocp_cluster_prefix}-${azurerm_resource_group.ocp.name}-"
 }
 
 resource "azuread_application" "azure_app" {
