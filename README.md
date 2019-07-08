@@ -11,31 +11,31 @@ These manifests setup the following base line:
 * 1 Resource Group
 * 1 Network with 2 Subnets (master/infra & application nodes)
 * 1 Bastion Host with public SSH Access (all mainteance is done through that host)
-* 3 masters, 2 infra nodes & n - application nodes
+* 3 masters, 2 infra nodes & n - application nodes (default 2)
 * 1 API LB pointing to the masters (Port 443)
 * 1 Apps LB pointing to the infra nodes (Port 80 & 443)
 
                              +                   +
                +             |                   |
-               |          +--v--+           +----v-----+
-       +------------------|     |-----------|          |---------------------------------+
-       |       |      +---+ API |           |  Apps    +--------+                        |
-       |  +----v----+ |   ++---++           +------+---+        |                        |
-       |  |         | |    |   |                   |            |                        |
-       |  | Bastion | |    |   |                +--v-----+   +--v-----+                  |
-       |  +---------+ |    |   |                |        |   |        |                  |
-       |              |    |   |                | Infra  |   | Infra  |                  |
-       |       +------v-+  |+--v-----+          +--------+   +--------+                  |
-       |       |        |  ||        |                                                   |
-       |       | Master |  || Master |                                                   |
-       |       +--------+  |+--------+                                                   |
-       |                   |                                                             |
-       |            +------v-+                                                           |
-       |            |        |              +-------------+   +-------------+            |
-       |            | Master |              |             |   |             |            |
-       |            +--------+              |  App Node   |   |  App Node   |            |
-       |                                    +-------------+   +-------------+            |
-       +---------------------------------------------------------------------------------+
+               |          +--v--+           +----v---+
+       +------------------| LB  |-----------|   LB   |------------------------+
+       |       |          | API |           |  Apps  +-+--------+             |
+       |  +----v----+     ++----+           +------+-+ |        |             |
+       |  |         |      |                           |        |             |
+       |  | Bastion | +----+---+                +------v-+   +--v-----+       |
+       |  +---------+ |    |   |                |        |   |        |       |
+       |              |    |   |                | Infra  |   | Infra  |       |
+       |       +------v-+  | +-v------+         +--------+   +--------+       |
+       |       |        |  | |        |                                       |
+       |       | Master |  | | Master |                                       |
+       |       +--------+  | +--------+                                       |
+       |                   |                                                  |
+       |            +------v-+                                                |
+       |            |        |              +-------------+   +-------------+ |
+       |            | Master |              |             |   |             | |
+       |            +--------+              |  App Node   |   |  App Node   | |
+       |                                    +-------------+   +-------------+ |
+       +----------------------------------------------------------------------+
 
 
 ## Components / Configuration
