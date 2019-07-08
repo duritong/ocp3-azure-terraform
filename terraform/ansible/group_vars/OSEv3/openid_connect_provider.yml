@@ -1,0 +1,33 @@
+# Configure an OpenID Connect provider e.g. against Azure AD
+#
+# * https://access.redhat.com/solutions/2465011
+#
+# Run /usr/share/ansible/openshift-ansible/playbooks/openshift-master/config.yml
+# afterwards.
+# You must readd one of the accounts as cluster-admin afterwards:
+#
+# oc adm policy add-cluster-role-to-user cluster-admin admin_from_ad --config=/etc/origin/master/admin.kubeconfig
+#openshift_master_identity_providers:
+#  - name: AzureAD
+#    challenge: "false"
+#    login: "true"
+#    mappingMethod: claim
+#    kind: OpenIDIdentityProvider
+#    clientID: <client_id>
+#    clientSecret: <client_secret>
+#    extraScopes:
+#      - profile
+#      - email
+#    claims:
+#      id:
+#      - sub
+#      preferredUsername:
+#      - preferred_name
+#      name:
+#      - name
+#      email:
+#      - email
+#    urls:
+#      authorize: "https://login.microsoftonline.com/__TENANT_ID__/oauth2/v2.0/authorize"
+#      token: "https://login.microsoftonline.com/__TENANT_ID__/oauth2/v2.0/token"
+#      userInfo: "https://graph.microsoft.com/oidc/userinfo"

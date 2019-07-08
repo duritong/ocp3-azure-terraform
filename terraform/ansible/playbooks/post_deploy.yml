@@ -1,5 +1,3 @@
-- import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
-
 - name: 'Add Admin rights'
   hosts: masters[0]
   gather_facts: no

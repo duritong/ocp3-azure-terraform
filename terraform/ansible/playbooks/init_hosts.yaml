@@ -1,5 +1,5 @@
 - name: 'Setup storage'
-  hosts: nodes
+  hosts: "{{ l_scale_up_hosts | default('nodes') }}"
   tasks:
     - name: Create filesystem for /var/lib/docker
       filesystem:
@@ -59,7 +59,7 @@
 - import_playbook: '/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml'
 
 - name: 'Patch hosts'
-  hosts: nodes
+  hosts: "{{ l_scale_up_hosts | default('nodes') }}"
   tasks:
     - name: 'clean cache'
       file:

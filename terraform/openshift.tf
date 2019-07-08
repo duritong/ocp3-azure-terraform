@@ -56,7 +56,7 @@ resource "null_resource" "inventory" {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
       user        = "${var.ocp_vm_admin_user}"
-      private_key = "${file("${path.module}/../certs/bastion")}"
+      private_key = "${tls_private_key.bastion.private_key_pem}"
     }
   }
 }
@@ -72,7 +72,7 @@ resource "null_resource" "ansiblecfg" {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
       user        = "${var.ocp_vm_admin_user}"
-      private_key = "${file("${path.module}/../certs/bastion")}"
+      private_key = "${tls_private_key.bastion.private_key_pem}"
     }
   }
 }
@@ -104,7 +104,7 @@ resource "null_resource" "openshift-prepare" {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
       user        = "${var.ocp_vm_admin_user}"
-      private_key = "${file("${path.module}/../certs/bastion")}"
+      private_key = "${tls_private_key.bastion.private_key_pem}"
     }
   }
 }

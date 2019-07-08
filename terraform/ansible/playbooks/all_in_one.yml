@@ -1,0 +1,4 @@
+- import_playbook: {{ playbook_dir }}/init_hosts.yml
+- import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
+- import_playbook: {{ playbook_dir }}/post_deploy.yml
+

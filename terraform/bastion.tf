@@ -90,7 +90,7 @@ resource "azurerm_virtual_machine" "bastion" {
     disable_password_authentication = true
     ssh_keys {
       path = "/home/${var.ocp_vm_admin_user}/.ssh/authorized_keys"
-      key_data = "${file("${path.module}/../certs/bastion.pub")}"
+      key_data = "${tls_private_key.bastion.public_key_openssh}"
     }
   }
 
@@ -102,7 +102,7 @@ resource "azurerm_virtual_machine" "bastion" {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
       user        = "${var.ocp_vm_admin_user}"
-      private_key = "${file("${path.module}/../certs/bastion")}"
+      private_key = "${tls_private_key.bastion.private_key_pem}"
     }
   }
   provisioner "file" {
@@ -113,18 +113,18 @@ resource "azurerm_virtual_machine" "bastion" {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
       user        = "${var.ocp_vm_admin_user}"
-      private_key = "${file("${path.module}/../certs/bastion")}"
+      private_key = "${tls_private_key.bastion.private_key_pem}"
     }
   }
   provisioner "file" {
-    source = "${path.module}/../certs/openshift"
+    source = "${tls_private_key.openshift.private_key_pem}"
     destination = "/home/${var.ocp_vm_admin_user}/.ssh/id_rsa"
 
     connection {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
       user        = "${var.ocp_vm_admin_user}"
-      private_key = "${file("${path.module}/../certs/bastion")}"
+      private_key = "${tls_private_key.bastion.private_key_pem}"
     }
   }
   provisioner "remote-exec" {
@@ -139,7 +139,7 @@ resource "azurerm_virtual_machine" "bastion" {
       type        = "ssh"
       host        = "${azurerm_public_ip.bastion.ip_address}"
       user        = "${var.ocp_vm_admin_user}"
-      private_key = "${file("${path.module}/../certs/bastion")}"
+      private_key = "${tls_private_key.bastion.private_key_pem}"
     }
   }
   provisioner "local-exec" {

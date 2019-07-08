@@ -232,7 +232,7 @@ resource "azurerm_virtual_machine" "infra" {
     disable_password_authentication = true
     ssh_keys {
       path = "/home/${var.ocp_vm_admin_user}/.ssh/authorized_keys"
-      key_data = "${file("${path.module}/../certs/openshift.pub")}"
+      key_data = "${tls_private_key.openshift.public_key_openssh}"
     }
   }
 }

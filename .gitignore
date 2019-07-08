@@ -15,7 +15,7 @@ azure.auto.tfvars
 
 *.log
 
-certs/*
+ssh/*
 
 old/*
 
