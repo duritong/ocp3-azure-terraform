@@ -70,3 +70,4 @@ These manifests setup the following base line:
 
 * disable waa agent
 * Azure osb integration
+* finish LEE redeploy
