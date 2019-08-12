@@ -1,0 +1,9 @@
+---
+- name: 'Set custom sysctl values'
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: yes 
+    sysctl_file: '/etc/sysctl.d/99-custom-ocp.conf'
+  loop: "{{ custom_sysctl_tunings | dict2items }}"

@@ -1,5 +1,7 @@
 - name: 'Setup storage'
   hosts: "{{ l_scale_up_hosts | default('nodes') }}"
+  roles:
+    - sysctl-tuning
   tasks:
     - name: Create filesystem for /var/lib/docker
       filesystem:

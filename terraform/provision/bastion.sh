@@ -84,6 +84,8 @@ echo $(date) " - Azure CLI installation complete"
 echo $(date) " - Adding DOMAIN to search for resolv.conf"
 echo "DOMAIN=`domainname -d`" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
 
+chmod +x ~/ocp/*.sh
+
 # configure acme.sh client
 git clone https://github.com/Neilpang/acme.sh.git
 cd acme.sh
@@ -97,10 +99,10 @@ export AZUREDNS_TENANTID
 export AZUREDNS_APPID
 export AZUREDNS_CLIENTSECRET
 
-~/acme/acme.sh --config-home /home/ocpadmin/ocp/acme/data --issue --dns dns_azure -d "api${dns_base_name}" -d "api-int${dns_base_name}"
-~/acme/acme.sh --config-home /home/ocpadmin/ocp/acme/data --issue --dns dns_azure -d "apps${dns_base_name}" -d "*.apps${dns_base_name}"
+~/acme/acme.sh --config-home ~/ocp/acme/data --issue --dns dns_azure -d "api${dns_base_name}" -d "api-int${dns_base_name}" --renew-hook ~/ocp/acme-renew-hook-master.sh
+~/acme/acme.sh --config-home ~/ocp/acme/data --issue --dns dns_azure -d "apps${dns_base_name}" -d "*.apps${dns_base_name}" --renew-hook ~/ocp/acme-renew-hook-router.sh
 
-cd /home/ocpadmin/ocp
+cd ~/ocp
 git init
 git config user.name "Bastion api${dns_base_name}"
 git config user.email "bastion@api${dns_base_name}"
