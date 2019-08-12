@@ -1,0 +1,14 @@
+# no need for the lengthy 1 month retention
+journald_vars_to_replace:
+  - { var: Storage, val: persistent }
+  - { var: Compress, val: yes }
+  - { var: SyncIntervalSec, val: 1s }
+  - { var: RateLimitInterval, val: 1s }
+  - { var: RateLimitBurst, val: 10000 }
+  - { var: SystemMaxUse, val: 4G }
+  - { var: SystemKeepFree, val: 40% }
+  - { var: SystemMaxFileSize, val: 10M }
+  - { var: MaxRetentionSec, val: 1week }
+  - { var: MaxFileSec, val: 1day }
+  - { var: ForwardToSyslog, val: no }
+  - { var: ForwardToWall, val: no }
