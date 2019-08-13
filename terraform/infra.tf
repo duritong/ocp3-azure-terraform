@@ -217,6 +217,7 @@ resource "azurerm_virtual_machine" "infra" {
     name              = "${var.ocp_cluster_prefix}-infra-${count.index + 1}-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
+    disk_size_gb      = "64"
     managed_disk_type = "${var.ocp_disk_storage_plan}"
   }
 
